@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Доступ к серверу</title>
+</head>
+<body>
+
+<h2>Доступ к серверу</h2>
+
+<button onclick="getServerPassword()">Получить пароль сервера</button>
+
+<p id="result"></p>
+
+<script>
+  function getServerPassword() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // не залогинен
+      window.location.href = "/login.html";
+      return;
+    }
+
+    // тут в будущем будет запрос с JWT
+    document.getElementById("result").innerText =
+            "Пароль сервера: SERVER_PASSWORD_123";
+  }
+</script>
+
+</body>
+</html>

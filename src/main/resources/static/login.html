@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Вход</title>
+</head>
+<body>
+
+<h2>Вход в систему</h2>
+
+<input id="username" placeholder="Логин"><br><br>
+<input id="password" type="password" placeholder="Пароль"><br><br>
+
+<button onclick="login()">Войти</button>
+
+<p id="error" style="color:red;"></p>
+
+<script>
+  async function login() {
+    const res = await fetch("/api/auth", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value
+      })
+    });
+
+    if (!res.ok) {
+      document.getElementById("error").innerText = "Ошибка входа";
+      return;
+    }
+
+    const data = await res.json();
+
+    // 🔐 место под JWT
+    localStorage.setItem("token", data.token || "JWT_PLACEHOLDER");
+    localStorage.setItem("role", data.role);
+
+    // 🔐 место под 2FA
+    if (data.need2fa) {
+      window.location.href = "/totp.html";
+      return;
+    }
+
+    if (data.role === "ADMIN") {
+      window.location.href = "/admin.html";
+    } else {
+      window.location.href = "/index.html";
+    }
+  }
+</script>
+
+</body>
+</html>

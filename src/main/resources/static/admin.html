@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Админ-панель</title>
+</head>
+<body>
+
+<h2>Админ-панель</h2>
+
+<button onclick="logout()">Выйти</button>
+
+<h3>Пользователи</h3>
+
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Логин</th>
+    <th>Действие</th>
+  </tr>
+  </thead>
+  <tbody id="usersTable"></tbody>
+</table>
+
+<h3>Добавить пользователя</h3>
+<input id="newUsername" placeholder="Логин">
+<input id="newPassword" placeholder="Пароль">
+<button onclick="addUser()">Добавить</button>
+
+<script>
+  const role = localStorage.getItem("role");
+  if (role !== "ADMIN") {
+    window.location.href = "/index.html";
+  }
+
+  async function loadUsers() {
+    const res = await fetch("/api/admin/users", {
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      }
+    });
+
+    const users = await res.json();
+    const table = document.getElementById("usersTable");
+    table.innerHTML = "";
+
+    users.forEach(u => {
+      table.innerHTML += `
+            <tr>
+                <td>${u.id}</td>
+                <td>${u.username}</td>
+                <td><button onclick="deleteUser(${u.id})">Удалить</button></td>
+            </tr>
+        `;
+    });
+  }
+
+  async function addUser() {
+    await fetch("/api/admin/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      },
+      body: JSON.stringify({
+        username: newUsername.value,
+        password: newPassword.value
+      })
+    });
+
+    loadUsers();
+  }
+
+  async function deleteUser(id) {
+    await fetch(`/api/admin/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      }
+    });
+
+    loadUsers();
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = "/index.html";
+  }
+
+  loadUsers();
+</script>
+
+</body>
+</html>
