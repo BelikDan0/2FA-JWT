@@ -33,7 +33,7 @@ public class UserService {
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(dto.getPassword());
-        user.setRole(Role.USER); // важно
+        user.setRole("USER" ); // важно
 
         User savedUser = userRepository.save(user); // 🔥 ВОТ ГЛАВНОЕ
 
